@@ -30,9 +30,10 @@ router
   .post(createProjectValidator(), validate, createProject);
 
 router
-  .route("/:projectId")
-  .get(validateProjectPermission(AvailableUserRole), getProjectById)
-  .put(
+    .route("/:projectId")
+ // .get( validateProjectPermission(Object.values(AvailableUserRole)), getProjectById )
+    .get( validateProjectPermission([UserRolesEnum.ADMIN, UserRolesEnum.MEMBER]), getProjectById )
+    .put(
     validateProjectPermission([UserRolesEnum.ADMIN]),
     createProjectValidator(),
     validate,
@@ -54,5 +55,5 @@ router
   .route("/:projectId/members/:userId")
   .put(validateProjectPermission([UserRolesEnum.ADMIN]), updateMemberRole)
   .delete(validateProjectPermission([UserRolesEnum.ADMIN]), deleteMember);
- 
+
 export default router;
