@@ -3,7 +3,7 @@ import cors from "cors";
 import cookieParser from "cookie-parser";
 const app = express();
 
-//basic configurations
+// basic configurations
 app.use(express.json({ limit: "16kb" }));
 app.use(express.urlencoded({ extended: true, limit: "16kb" }));
 app.use(express.static("public"));
@@ -19,29 +19,32 @@ app.use(cors({
 
 //  import the routes
 import healthCheckRouter from "./routes/healthcheck.routes.js";
-
 import authRouter from "./routes/auth.routes.js";
+import projectRouter from "./routes/project.routes.js";
+
 
 app.use("/api/v1/healthcheck", healthCheckRouter);
 app.use("/api/v1/auth", authRouter);
+app.use("/api/v1/projects", projectRouter);
+
 
 app.get('/', (req, res) => {
   res.send("welcome to basecamp");
-})
+});
 
 // for next() error--------------------------------------------
-app.use((err, req, res, next) => {
-  const statusCode = err.statusCode || 500;
-  const message = err.message || "Something went wrong";
+// app.use((err, req, res, next) => {
+//   const statusCode = err.statusCode || 500;
+//   const message = err.message || "Something went wrong";
   
-  return res.status(statusCode).json({
-    success: false,
-    statusCode: statusCode,
-    message: message,
-    errors: err.errors || [],
-    stack: process.env.NODE_ENV === "development" ? err.stack : undefined
-  });
-});
+//   return res.status(statusCode).json({
+//     success: false,
+//     statusCode: statusCode,
+//     message: message,
+//     errors: err.errors || [],
+//     stack: process.env.NODE_ENV === "development" ? err.stack : undefined
+//   });
+// });
 //-----------------------------------------------------------
 
 export default app;
