@@ -47,7 +47,7 @@ export const validateProjectPermission = (roles = []) => {
       throw new ApiError(400, "project not found");
     }
 
-    const givenRole = project?.role;
+    const givenRole = project?.role; //getting role from db
 
     req.user.role = givenRole;
 

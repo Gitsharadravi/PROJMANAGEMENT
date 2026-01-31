@@ -14,7 +14,7 @@ const projectMemberSchema = new Schema(
       required: true,
     },
     role: {
-      type: Schema.Types.ObjectId,
+      type: String,
       enum: AvailableUserRole,
       default: UserRolesEnum.MEMBER,
     },

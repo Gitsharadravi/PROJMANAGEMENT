@@ -124,7 +124,9 @@ const deleteProject = asyncHandler(async (req, res) => {
   if (!project) {
     throw new ApiError(404, "Project not found");
   }
-  return res.status(200, project, "Project deleted successfully");
+  return res
+        .status(200)
+        .json(new ApiResponse(200, project, "Project deleted successfully"));
 });
 
 const addMembersToProject = asyncHandler(async (req, res) => {
@@ -230,7 +232,7 @@ const updateMemberRole = asyncHandler(async (req, res) => {
     throw new ApiError(404, "Invalid Role");
   }
 
-  const projectMember = await Project.findOne({
+  let projectMember = await Project.findOne({
     project: new mongoose.Types.ObjectId(projectId),
     user: new mongoose.Types.ObjectId(userId),
   });
