@@ -31,7 +31,7 @@ const taskSchema = new Schema(
       type: [
         {
           url: String,
-          mimetype: String,
+          mimetype: String,  // it can be pdf, images...
           size: Number,
         },
       ],

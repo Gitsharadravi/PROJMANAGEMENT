@@ -15,7 +15,7 @@ const projectMemberSchema = new Schema(
     },
     role: {
       type: String,
-      enum: AvailableUserRole,
+      enum: AvailableUserRole, //property for enumeration
       default: UserRolesEnum.MEMBER,
     },
   },

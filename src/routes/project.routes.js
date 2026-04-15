@@ -21,25 +21,34 @@ import {
 } from "../middlewares/auth.middleware.js";
 import { AvailableUserRole, UserRolesEnum } from "../utils/constants.js";
 
+console.log({
+  getProjects: typeof getProjects,
+  getProjectById: typeof getProjectById,
+  validateProjectPermission: typeof validateProjectPermission,
+  permissionResult: typeof validateProjectPermission([UserRolesEnum.ADMIN])
+});
+
 const router = Router();
-router.use(verifyJWT);
+router.use(verifyJWT);   //all route will include verifyJWT middleware
 
 router
   .route("/")
   .get(getProjects)
-  .post(createProjectValidator(), validate, createProject);
+  .post(createProjectValidator(),
+   validate,
+   createProject);
 
 router
-    .route("/:projectId")
- // .get( validateProjectPermission(Object.values(AvailableUserRole)), getProjectById )
-    .get( validateProjectPermission([UserRolesEnum.ADMIN, UserRolesEnum.MEMBER]), getProjectById )
-    .put(
+  .route("/:projectId")
+  .get(validateProjectPermission(AvailableUserRole), getProjectById)
+  .put(
     validateProjectPermission([UserRolesEnum.ADMIN]),
     createProjectValidator(),
     validate,
     updateProject,
   )
-  .delete(validateProjectPermission([UserRolesEnum.ADMIN]), deleteProject);
+  .delete(validateProjectPermission([UserRolesEnum.ADMIN]),
+   deleteProject);
 
 router
   .route("/:projectId/members")
@@ -53,7 +62,9 @@ router
 
 router
   .route("/:projectId/members/:userId")
-  .put(validateProjectPermission([UserRolesEnum.ADMIN]), updateMemberRole)
-  .delete(validateProjectPermission([UserRolesEnum.ADMIN]), deleteMember);
+  .put(validateProjectPermission([UserRolesEnum.ADMIN]),
+   updateMemberRole)
+  .delete(validateProjectPermission([UserRolesEnum.ADMIN]),
+   deleteMember);
 
 export default router;

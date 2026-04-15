@@ -57,6 +57,24 @@ const createProjectValidator = () => {
   ];
 };
 
+const createTaskValidator = () => {
+  return [
+    body("title").notEmpty().withMessage("Title is required"),
+    body("description").optional(),
+  ];
+};
+const createSubtaskValidator = () => {
+  return [
+    body("title").notEmpty().withMessage("Title is required"),
+  ];
+};
+
+const createNoteValidator = () => {
+  return [
+    body("content").notEmpty().withMessage("content is required"),
+  ];
+};
+
 const addMembertoProjectValidator = () => {
   return [
     body("email")
@@ -68,8 +86,8 @@ const addMembertoProjectValidator = () => {
     body("role")
       .notEmpty()
       .withMessage("Role is required")
-      .isIn(AvailableUserRole)
-      .withMessage("Role is invalid"),
+      .isIn(AvailableUserRole)         //isIn( ) checks whether something is available in array or not
+      .withMessage("Role is invalid"), 
   ];
 };
 
@@ -80,7 +98,10 @@ export {
   userForgotPasswordValidator,
   userResetForgotPasswordValidator,
   createProjectValidator,
-  addMembertoProjectValidator
+  addMembertoProjectValidator,
+  createTaskValidator,
+  createSubtaskValidator,
+  createNoteValidator,
 };
 
 //Write validation for Login

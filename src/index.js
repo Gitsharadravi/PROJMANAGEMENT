@@ -15,6 +15,10 @@ connectDB()
   })
   .catch((err) => {
   console.log("MongoDB connection error", err);
-  process.exit(1)
+  process.exit(1)  //exit if the connection fail
   })    
 
+  import { logger } from "./logger/index.js";
+  logger.warn("warn information")
+  logger.info("info information")
+  logger.debug("debug information")
