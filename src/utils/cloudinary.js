@@ -9,12 +9,6 @@ cloudinary.config({
 });
 console.log(`CLOUDINARY_CLOUD_NAME: ${process.env.CLOUDINARY_CLOUD_NAME} ${process.env.MONGO_URI}`, process.env.MONGO_URI)
 
-// cloudinary.config({ 
-//   cloud_name: "skofficialcloud", 
-//   api_key: "163339873419623", 
-//   api_secret: "Tv8Rht7UlI9B-o6x6F2RiAfXb54"
-// });
-
 
 const uploadOnCloudinary = async (localFilePath)=> {
     console.log("Local Path", localFilePath);
@@ -22,7 +16,6 @@ const uploadOnCloudinary = async (localFilePath)=> {
         if (!localFilePath) return null;
         console.log(fs.existsSync( localFilePath));
 
-        // let localFile = "../../public/images/1776604857981-Contactless.png"
 
         //upload file on cloudinary 
         const response = await cloudinary.uploader.upload( localFilePath, {

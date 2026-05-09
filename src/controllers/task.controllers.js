@@ -39,7 +39,7 @@ const createTask = asyncHandler(async (req, res) => {
     throw new ApiError(400, "Attachement is required")
   }
 
-const attachment = await uploadOnCloudinary(attachementsLocalPath)
+const attachment = await uploadOnCloudinary(attachementsLocalPath)  // make wait intentionally, untill upload
 
 if(!attachment){
   throw new ApiError(400, "Attachement is required for cloudinary")
