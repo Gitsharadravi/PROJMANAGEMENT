@@ -29,9 +29,10 @@ router.use(verifyJWT);   //all/every route will include verifyJWT middleware
 router
   .route("/:projectId")
   .get(getTasks)
-  .post(createTaskValidator(),
+  .post(upload.fields([{name: "attachements", maxCount: 1}]),      
+   createTaskValidator(),
    validate,
-   upload.single('attachements'), //.fields([{},{}])
+   //upload.single('attachements'), //.fields([{},{}])
    createTask);
 
 router

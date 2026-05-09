@@ -1,8 +1,16 @@
 import express from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
+//import dotenv from "dotenv";
+
 
 const app = express();
+
+// env config
+// dotenv.config({
+//     path: "./.env"
+// })
+// const port = process.env.PORT || 3000;
 
 // basic configurations
 app.use(express.json({ limit: "16kb" }));  //data coming from body in json

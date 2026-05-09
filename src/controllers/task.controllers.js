@@ -30,20 +30,20 @@ const getTasks = asyncHandler(async (req, res) => {
 });
 
 const createTask = asyncHandler(async (req, res) => {
-  const { title, description, assignedTo, status  } = req.body;
+  const { title, description, assignedTo, status } = req.body;
   const { projectId } = req.params;
 
-  const attachementsLocalPath = req.files?.attachements[0]?.path;
-
+  const attachementsLocalPath = req.files?.attachements[0]?.path;     
+    console.log(attachementsLocalPath)
   if(!attachementsLocalPath){
     throw new ApiError(400, "Attachement is required")
   }
 
-const attachement = await uploadOnCloudinary(attachementsLocalPath)
+const attachment = await uploadOnCloudinary(attachementsLocalPath)
 
-if(!attachement){
-  throw new ApiError(400, "Attachement is required")
-}
+if(!attachment){
+  throw new ApiError(400, "Attachement is required for cloudinary")
+} 
 
   const project = await Project.findById(projectId);
 
@@ -69,7 +69,7 @@ if(!attachement){
       : undefined,
     status,
     assignedBy: new mongoose.Types.ObjectId(req.user._id),
-    attachements: attachement.url,
+    attachments: [{url: attachment?.url || ""}],
   });
 
   return res
