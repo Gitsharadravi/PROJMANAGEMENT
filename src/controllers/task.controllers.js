@@ -9,7 +9,7 @@ import mongoose from "mongoose";
 import { AvailableUserRole, UserRolesEnum } from "../utils/constants.js";
 import { logger } from "../logger/index.js";
 import { uploadOnCloudinary } from "../utils/cloudinary.js";
-
+import fs from 'node:fs';
 
 
 const getTasks = asyncHandler(async (req, res) => {
@@ -30,18 +30,48 @@ const getTasks = asyncHandler(async (req, res) => {
 });
 
 const createTask = asyncHandler(async (req, res) => {
+  //console.log(req.body);
   const { title, description, assignedTo, status } = req.body;
   const { projectId } = req.params;
+  //console.log(req.files)
 
-  const attachementsLocalPath = req.files?.attachements[0]?.path;     
-    console.log(attachementsLocalPath)
-  if(!attachementsLocalPath){
-    throw new ApiError(400, "Attachement is required")
+  const attachementsLocalPath = req.files.map(file => file.path); //?.attachments[0]?.path;     
+  console.log("attachementsLocalPath", attachementsLocalPath)
+  //console.log(typeof attachementsLocalPath)
+  //console.log("Array is ", Array.isArray(attachementsLocalPath));
+
+if(!attachementsLocalPath){
+    throw new ApiError(400, "Attachment is required")
   }
+//------------------------------------------------------
+// const cloudAttachment = attachementsLocalPath.map(async(file) => await uploadOnCloudinary(file)) 
+// console.log("CLOUD-ATTACHMENTS", cloudAttachment)
+//-------------------------------------------------------
+// const attachments = attachementsLocalPath.map((file) => {
+//     return {
+//       url: `${process.env.SERVER_URL}/images/${file.originalname}`,
+//       mimetype: file.mimetype,
+//       size: file.size,
+//     };
+//   });
+//-----------------------------------------------------------------
+  
+//const attachment = await uploadOnCloudinary(attachementsLocalPath)  // make wait intentionally, untill upload
+//----------------------------------------------------------------
+//  const clouduploadPromises  = req.files.map(async(file) => {
+//     const cloudAttachment = await uploadOnCloudinary(file.path)
+//     console.log("CLOUD-PROMISES", clouduploadPromises)
+// }) 
+//const cloudpromiseResult = await Promise.all(clouduploadPromises) 
+//console.log("CLOUD-PROMISES-RESULT", cloudpromiseResult) 
+//-----------------------------------------------------------------
 
-const attachment = await uploadOnCloudinary(attachementsLocalPath)  // make wait intentionally, untill upload
+const cloudAttachments = await Promise.all(
+  req.files.map(file => uploadOnCloudinary(file.path))
+);
+console.log("CLOUD-ATTACHMENTS", cloudAttachments)
 
-if(!attachment){
+if(!cloudAttachments){
   throw new ApiError(400, "Attachement is required for cloudinary")
 } 
 
@@ -50,15 +80,6 @@ if(!attachment){
   if (!project) {
     throw new ApiError(404, "Project not found");
   }
-  const files = req.files || [];
-
-  // const attachements = files.map((file) => {
-  //   return {
-  //     url: `${process.env.SERVER_URL}/images/${file.originalname}`,
-  //     mimetype: file.mimetype,
-  //     size: file.size,
-  //   };
-  // });
 
   const task = await Task.create({
     title,
@@ -69,8 +90,11 @@ if(!attachment){
       : undefined,
     status,
     assignedBy: new mongoose.Types.ObjectId(req.user._id),
-    attachments: [{url: attachment?.url || ""}],
+    //attachments: [{url: attachment?.url || ""}],
+    attachments: cloudAttachments.map((file) => (file.url)) 
   });
+
+  //fs.unlinkSync(attachementsLocalPath[1].path)
 
   return res
     .status(201)

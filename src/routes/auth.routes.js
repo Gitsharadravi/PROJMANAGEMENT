@@ -16,11 +16,12 @@ import {
 import { validate } from "../middlewares/validator.middleware.js";
 import { userChangeCurrentPasswordValidator, userForgotPasswordValidator, userLoginValidator, userRegisterValidator, userResetForgotPasswordValidator } from "../validators/index.js";
 import { verifyJWT } from "../middlewares/auth.middleware.js";
+import { upload } from "../middlewares/multer.middleware.js";
 
 const router = Router();
 
 //Unsecured routes
-router.route("/register").post(userRegisterValidator(), validate, registerUser);
+router.route("/register").post(upload.fields([{name:'avatar'},{name:'coverImage'}]), userRegisterValidator(), validate, registerUser);
 router.route("/login").post(userLoginValidator(), validate, login);
 
 router

@@ -7,11 +7,11 @@ cloudinary.config({
   api_key: process.env.CLOUDINARY_API_KEY, 
   api_secret: process.env.CLOUDINARY_API_SECRET
 });
-console.log(`CLOUDINARY_CLOUD_NAME: ${process.env.CLOUDINARY_CLOUD_NAME} ${process.env.MONGO_URI}`, process.env.MONGO_URI)
+// console.log(`CLOUDINARY_CLOUD_NAME: ${process.env.CLOUDINARY_CLOUD_NAME} ${process.env.MONGO_URI}`,process.env.MONGO_URI)
 
 
 const uploadOnCloudinary = async (localFilePath)=> {
-    console.log("Local Path", localFilePath);
+    //console.log("Local Path", localFilePath);
     try {
         if (!localFilePath) return null;
         console.log(fs.existsSync( localFilePath));
@@ -25,18 +25,16 @@ const uploadOnCloudinary = async (localFilePath)=> {
         
         //file has been uploaded on cloudinary successfully
         console.log("file has been uploaded on cloudinary successfully", response.url);
-        console.log("response", response);
+        //console.log("response", response);
 
-        fs.unlinkSync(localFilePath)
+        fs.unlinkSync(localFilePath)   //unlink synchronously
         return response;
 
     } catch (error) {
         /* if file has been uploaded unsuccessfully. File(may contain malicious/corrupted) present in server. for cleaning file we use unlink(delete) */
         console.log("Cloudinary upload error:", error);
         fs.unlinkSync(localFilePath)   // removes locally saved temporary file
-        return null;
-
-        
+        return null;    
         
     }
 }

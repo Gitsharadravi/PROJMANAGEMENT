@@ -5,6 +5,8 @@ import { asyncHandler } from "../utils/async-handler.js";
 import { emailVerificationMailgenContent, forgotPasswordMailgenContent, sendEmail } from "../utils/mail.js";
 import jwt from "jsonwebtoken";
 import crypto from "crypto";
+import { uploadOnCloudinary } from "../utils/cloudinary.js";
+import { promises } from "dns";
 
 const generateAccessAndRefreshTokens = async (userId) => {
     try {
@@ -26,6 +28,24 @@ const generateAccessAndRefreshTokens = async (userId) => {
 
 const registerUser =  asyncHandler(async(req, res) => {
    const {email, username, password, role} = req.body
+   
+   //const avatarCoverImageLocalPath = req.files
+   //console.log("avatarCoverImageLocalPath", avatarCoverImageLocalPath.coverImage[0].path);
+  //  console.log(typeof avatarCoverImageLocalPath)
+  //  console.log("Array is ", Array.isArray(avatarCoverImageLocalPath));
+
+   //--------------------------------------------------------------------------------------------------
+
+   const avatarCoverImageLocalPath = Object.values(req.files).flatMap((arr) => arr).map(file => file.path)
+   console.log("avatarCoverImageLocalPath is", avatarCoverImageLocalPath);
+   //--------------------------------------------------------------------------------------------------
+   //const cloudAvatarPath = await uploadOnCloudinary(avatarCoverImageLocalPath.coverImage[0].path)
+   //const cloudCoverImagePath = await uploadOnCloudinary(avatarCoverImageLocalPath.coverImage[0].path)
+
+   //--------------------------------------------------------------------------------------------------
+   const cloudAvatarCoverImagePath = await Promise.all(avatarCoverImageLocalPath.map(file => uploadOnCloudinary(file))) 
+   console.log("cloudAvatarCoverImagePath", cloudAvatarCoverImagePath);
+   //--------------------------------------------------------------------------------------------------
 
    const existedUser = await User.findOne({
        $or: [{username}, {email}]
@@ -39,7 +59,9 @@ const registerUser =  asyncHandler(async(req, res) => {
         email,
         password,
         username,
-        isEmailVerified: false
+        isEmailVerified: false,
+        //avatar: cloudAvatarPath.url
+        //coverImage: cloudAvatarCoverImagePath.url
    })
 
    const {unHashedToken, hashedToken, tokenExpiry} = user.generateTemporaryToken();
@@ -61,7 +83,7 @@ const registerUser =  asyncHandler(async(req, res) => {
 
    //for Response
    const createdUser = await User.findById(user._id).select("-password -refreshToken -emailVerificationToken -emailVerificationExpiry",); //   don't want dash field to send in res
-
+   //console.log("createdUser", createdUser);
    if(!createdUser){
     throw new ApiError(500, "Something went wrong while registering a user")
    }
@@ -82,12 +104,12 @@ const login = asyncHandler(async (req, res) => {
   }
 
   const user = await User.findOne({email});
-
+  console.log("user is", user);
   if(!user){
     throw new ApiError(400, "User does not exists");
   }
 
-  const isPasswordValid = await user.isPasswordCorrect(password);
+  const isPasswordValid = await user.isPasswordCorrect(password); //return true or false
 
   if(!isPasswordValid){
     throw new ApiError(400, "Invalid Credentials");
@@ -100,12 +122,12 @@ const loggedInUser = await User.findById(user._id).select("-password -refreshTok
    // for setting tokens in cookie
    const options = {
     httpOnly: true,
-    secure: true
+    secure: true  // only server can modify & frontend can't
    }
 
    return res
           .status(200)
-          .cookie("accessToken", accessToken, options)
+          .cookie("accessToken", accessToken, options) //key-value, options
           .cookie("refreshToken", refreshToken, options)
           .json(new ApiResponse(200, 
             {

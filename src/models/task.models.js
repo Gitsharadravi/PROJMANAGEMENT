@@ -27,7 +27,7 @@ const taskSchema = new Schema(
       enum: AvailableTaskStatus,
       default: TaskStatusEnum.TODO,
     },
-    attachments: {
+    /* attachments: {
       type: [
         {
           url: String,
@@ -36,7 +36,9 @@ const taskSchema = new Schema(
         },
       ],
       default: [],
-    },
+    }, */
+
+    attachments: [String]
   },
   { timestamps: true },
 );
